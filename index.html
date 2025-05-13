@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>De Mol - Ronneke200</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      font-family: sans-serif;
+      overflow: hidden;
+    }
+
+    body {
+      background-image: url('name.jpg');
+      background-size: cover;
+      background-position: top right;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #introOverlay,
+    #startOverlay {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      background: #000c;
+      color: white;
+      font-size: 2rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      cursor: pointer;
+    }
+
+    #nameInput {
+      font-size: 3em;
+      padding: 0.3em 0;
+      width: 50%;
+      text-align: center;
+      border: none;
+      border-bottom: 2px solid #53fedcff;
+      background-color: transparent;
+      color: white;
+      outline: none;
+      display: none;
+      position: absolute;
+      z-index: 10;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="introOverlay">Click to Play Intro</div>
+  <div id="startOverlay" style="display: none;">Click to Start</div>
+  <input type="text" id="nameInput" placeholder="Naam" />
+
+  <!-- Audio -->
+  <audio id="intro" src="intro.mp3"></audio>
+  <audio id="waiting" src="waiting.mp3" loop></audio>
+  <audio id="alarm" src="alarm.mp3"></audio>
+  <audio id="ok" src="ok.mp3"></audio>
+
+  <script>
+    const introOverlay = document.getElementById('introOverlay');
+    const startOverlay = document.getElementById('startOverlay');
+    const input = document.getElementById('nameInput');
+
+    const intro = document.getElementById('intro');
+    const waiting = document.getElementById('waiting');
+    const alarm = document.getElementById('alarm');
+    const ok = document.getElementById('ok');
+
+    // Fixed target name
+    const targetName = "Potter";
+
+    // Stop all sounds before playing a new one
+    function stopAllSounds() {
+      [intro, waiting, alarm, ok].forEach(audio => {
+        audio.pause();
+        audio.currentTime = 0;
+      });
+    }
+
+    // Reset input view
+    function resetToInput() {
+      stopAllSounds();
+      document.body.style.backgroundImage = "url('name.jpg')";
+      input.value = '';
+      input.style.display = 'block';
+      input.focus();
+      waiting.play().catch(console.warn);
+    }
+
+    introOverlay.addEventListener('click', () => {
+      introOverlay.style.display = 'none';
+      intro.play().catch(console.warn);
+      startOverlay.style.display = 'flex';
+    });
+
+    startOverlay.addEventListener('click', () => {
+      startOverlay.style.display = 'none';
+      stopAllSounds();
+      document.body.style.backgroundImage = "url('name.jpg')";
+      input.style.display = 'block';
+      input.focus();
+      waiting.play().catch(console.warn);
+    });
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const entered = input.value.trim();
+        if (!entered) return;
+
+        input.style.display = 'none';
+        stopAllSounds();
+
+        if (entered.toLowerCase() === targetName.toLowerCase()) {
+          document.body.style.backgroundImage = "url('alarm.png')";
+          alarm.play().catch(console.warn);
+        } else {
+          document.body.style.backgroundImage = "url('ok.png')";
+          ok.play().catch(console.warn);
+        }
+
+        // Add click to return to input view
+        document.body.addEventListener('click', resetToInput, { once: true });
+      }
+    });
+  </script>
+</body>
+
+</html>
